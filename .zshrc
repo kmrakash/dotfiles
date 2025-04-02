@@ -31,6 +31,15 @@ alias gcoall='git checkout -- .'
 alias gr='git remote'
 alias gre='git reset'
 
+
+# Work
+alias vuat="echo USER_NAME=Akash-Kumar-UAT && sudo openvpn --config ~/work/vpn/UAT-Instance_Akash-Kumar-UAT_UAT-Instance.ovpn --auth-retry interact"
+# alias vuat="sudo openvpn --config ~/work/vpn/UAT-Instance_Akash-Kumar-UAT_UAT-Instance.ovpn --auth-retry interact"
+alias jenkin="sudo openvpn --config ~/work/vpn/arisinfra-Akash.ovpn --auth-retry interact"
+alias vprod="echo USER_NAME=Prod-AkashKumar && sudo openvpn --config ~/work/vpn/Prod-Instance_Prod-AkashKumar_Prod-Instance.ovpn --auth-retry interact"
+alias vproddb="echo USER_NAME=AkashKumar-Prod-DB && sudo openvpn --config ~/work/vpn/Prod-DB_AkashKumar-Prod-DB_Prod-DB-Access.ovpn --auth-retry interact"
+alias generateToken="aws rds generate-db-auth-token --hostname prodarisinfra-mumbai-cluster.cluster-c3x8jplo9izp.ap-south-1.rds.amazonaws.com --port 5432 --region ap-south-1 --username akash_write_access "
+
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
   export NVM_DIR="$HOME/.nvm"
@@ -54,3 +63,21 @@ export PATH=$PATH:/path/to/nvim
 # if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
 #     tmux attach-session -t default || tmux new-session -s default
 # fi
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/kmrakash/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Disable underline
+(( ${+ZSH_HIGHLIGHT_STYLES} )) || typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[path]=none
+ZSH_HIGHLIGHT_STYLES[path_prefix]=none
+# Change colors
+# export ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
+# export ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue
+# export ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
+
+# Activate autosuggestions
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
