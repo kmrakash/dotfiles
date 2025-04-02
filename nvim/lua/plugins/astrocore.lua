@@ -77,6 +77,7 @@ return {
         [">"] = { ">gv", desc = "Increase indentation and reselect" },
         ["J"] = { ":m '>+1<CR>gv=gv", desc = "Move selection down" },
         ["K"] = { ":m '<-2<CR>gv=gv", desc = "Move selection up" },
+        -- ["<Leader>f"] = { function() vim.lsp.buf.format { async = true } end, desc = "Format selected block" },
       },
     },
   },

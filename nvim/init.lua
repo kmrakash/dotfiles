@@ -15,5 +15,10 @@ if not pcall(require, "lazy") then
   vim.cmd.quit()
 end
 
-require "lazy_setup"
-require "polish"
+if vim.g.vscode then
+  require "vs_code_setup"
+  return
+else
+  require "lazy_setup"
+  require "polish"
+end

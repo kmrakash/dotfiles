@@ -8,6 +8,6 @@ return {
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.colorscheme.catppuccin" },
   { import = "astrocommunity.motion.flash-nvim" },
-  { import = "astrocommunity.file-explorer.telescope-file-browser-nvim" },
+  -- { import = "astrocommunity.file-explorer.telescope-file-browser-nvim" },
   { import = "astrocommunity.motion.nvim-surround" },
 }
