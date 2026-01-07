@@ -83,5 +83,5 @@ require("lazy").setup({
 --  base2tone_<name>_dark  and base2tone_<name>_light
 -- "Earth" is one of the available flavors (see plugin repo/demo for exact names)
 -- We'll try the "earth" dark variant below. If it errors, run :colorscheme to list.
-vim.cmd("colorscheme base2tone_earth_dark")
+vim.cmd("colorscheme default")
 
