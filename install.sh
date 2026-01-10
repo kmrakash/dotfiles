@@ -70,6 +70,7 @@ targets=(
     "$HOME/.tmux.conf"
     "$HOME/.wezterm.lua"
     "$HOME/.zshrc"
+    "$HOME/.config/starship.toml"
     "$HOME/.config/ghostty"
     "$HOME/.config/kitty"
     "$HOME/.config/nvim"
