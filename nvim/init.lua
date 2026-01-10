@@ -18,6 +18,12 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+
+-- --------------------------
+-- Local Variables
+-- --------------------------
+local leet_arg = "leetcode.nvim"
+
 -- --------------------------
 -- Basic settings
 -- --------------------------
@@ -65,12 +71,103 @@ require("lazy").setup({
     },
   },
 
+   -- Tree-sitter ( text parser )
+   -- Telescope (fuzzy finder)
+  {
+    "nvim-telescope/telescope.nvim",
+    tag = "0.1.6",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
+
+  -- nvim-treesitter + textobjects (add to lazy.nvim plugin list)
+{
+  "nvim-treesitter/nvim-treesitter",
+  build = ":TSUpdate",
+  -- load early so highlighting & textobjects are available
+  lazy = false,
+  dependencies = {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+  },
+  config = function()
+    require("nvim-treesitter.configs").setup({
+      -- Parsers to always ensure installed
+      ensure_installed = { "lua", "python", "javascript", "html" },
+
+      -- Install parsers synchronously (helpful first run)
+      sync_install = true,
+
+      -- Highlighting
+      highlight = {
+        enable = true,
+        -- fallback to regex highlighting for some langs if needed
+        additional_vim_regex_highlighting = false,
+      },
+
+      -- Incremental selection (smart expand/shrink selection)
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "gnn",        -- start selection (go to node)
+          node_incremental = "grn",      -- expand to next node
+          node_decremental = "grm",      -- shrink selection
+          scope_incremental = "grc",     -- expand to scope (optional)
+        },
+      },
+
+      -- Textobjects (select/ move / swap based on syntax)
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true, -- jump forward to textobj
+          keymaps = {
+            ["af"] = "@function.outer",
+            ["if"] = "@function.inner",
+            ["ac"] = "@class.outer",
+            ["ic"] = "@class.inner",
+            ["aa"] = "@parameter.outer",
+            ["ia"] = "@parameter.inner",
+          },
+        },
+        move = {
+          enable = true,
+          set_jumps = true, -- add to jumplist
+          goto_next_start = {
+            ["]m"] = "@function.outer",
+            ["]]"] = "@class.outer",
+          },
+          goto_previous_start = {
+            ["[m"] = "@function.outer",
+            ["[["] = "@class.outer",
+          },
+        },
+        swap = {
+          enable = true,
+          swap_next = { ["<leader>a"] = "@parameter.inner" },
+         swap_previous = { ["<leader>A"] = "@parameter.inner" },
+         },
+       },
+     })
+   end,
+ },
+
+  -- leetcode.nvim (solve LeetCode problems in Neovim)
+  {
+    "kawre/leetcode.nvim",
+    lazy = leet_arg ~= vim.fn.argv(0, -1),
+    build = ":TSUpdate html",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+    },
+    opts = { arg = leet_arg },
+  },
+
 }, {
   -- lazy.nvim options
   defaults = { lazy = true },
 })
 -- --------------------------
--- Colorscheme: default 
+-- Colorscheme: default
 -- --------------------------
 vim.cmd("colorscheme default")
 
