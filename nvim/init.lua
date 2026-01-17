@@ -150,24 +150,35 @@ require("lazy").setup({
    end,
  },
 
-  -- leetcode.nvim (solve LeetCode problems in Neovim)
-  {
-    "kawre/leetcode.nvim",
-    lazy = leet_arg ~= vim.fn.argv(0, -1),
-    build = ":TSUpdate html",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-    opts = { arg = leet_arg },
-  },
+   -- leetcode.nvim (solve LeetCode problems in Neovim)
+   {
+     "kawre/leetcode.nvim",
+     lazy = leet_arg ~= vim.fn.argv(0, -1),
+     build = ":TSUpdate html",
+     dependencies = {
+       "nvim-lua/plenary.nvim",
+       "MunifTanjim/nui.nvim",
+     },
+     opts = { arg = leet_arg },
+   },
+
+   -- gruvbox theme
+   {
+     "ellisonleao/gruvbox.nvim",
+     priority = 1000,
+     config = function()
+       require("gruvbox").setup({
+         contrast = "hard",
+       })
+     end,
+   },
 
 }, {
   -- lazy.nvim options
   defaults = { lazy = true },
 })
 -- --------------------------
--- Colorscheme: default
+-- Colorscheme: gruvbox
 -- --------------------------
-vim.cmd("colorscheme default")
+vim.cmd("colorscheme gruvbox")
 

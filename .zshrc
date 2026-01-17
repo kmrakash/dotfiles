@@ -116,8 +116,43 @@ fi
 
 
 ############################
-# ZSH syntax highlighting config
+# ZSH syntax highlighting config (gruvbox theme)
 ############################
 (( ${+ZSH_HIGHLIGHT_STYLES} )) || typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[path]=none
 ZSH_HIGHLIGHT_STYLES[path_prefix]=none
+ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=red
+ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[alias]=fg=blue
+ZSH_HIGHLIGHT_STYLES[builtin]=fg=blue
+ZSH_HIGHLIGHT_STYLES[function]=fg=blue
+ZSH_HIGHLIGHT_STYLES[command]=fg=green
+ZSH_HIGHLIGHT_STYLES[precommand]=fg=yellow,bold
+ZSH_HIGHLIGHT_STYLES[commandseparator]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[hashed-command]=fg=green
+ZSH_HIGHLIGHT_STYLES[autodirectory]=fg=cyan,underline
+ZSH_HIGHLIGHT_STYLES[globbing]=fg=magenta
+ZSH_HIGHLIGHT_STYLES[history-expansion]=fg=blue
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=magenta
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=magenta
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]=fg=green
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]=fg=green
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]=fg=green
+ZSH_HIGHLIGHT_STYLES[rc-quote]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[assign]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[redirection]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[comment]=fg=bright_black
+ZSH_HIGHLIGHT_STYLES[named-fd]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[numeric-fd]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
+ZSH_HIGHLIGHT_STYLES[bracket-error]=fg=red,bold
+ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=blue
+ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=green
+ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta
+ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow
+ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan
+ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
