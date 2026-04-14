@@ -110,78 +110,68 @@ require("lazy").setup({
     dependencies = { "nvim-lua/plenary.nvim" },
   },
 
-  -- nvim-treesitter + textobjects (add to lazy.nvim plugin list)
-{
-  "nvim-treesitter/nvim-treesitter",
-  build = ":TSUpdate",
-  -- load early so highlighting & textobjects are available
-  lazy = false,
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-  },
-  config = function()
-    require("nvim-treesitter.configs").setup({
-      -- Parsers to always ensure installed
-      ensure_installed = { "lua", "python", "javascript", "html", "typescript", "tsx", "json", "markdown" },
-
-      -- Install parsers synchronously (helpful first run)
-      sync_install = true,
-
-      -- Highlighting
-      highlight = {
-        enable = true,
-        -- fallback to regex highlighting for some langs if needed
-        additional_vim_regex_highlighting = false,
-      },
-
-      -- Incremental selection (smart expand/shrink selection)
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "gnn",        -- start selection (go to node)
-          node_incremental = "grn",      -- expand to next node
-          node_decremental = "grm",      -- shrink selection
-          scope_incremental = "grc",     -- expand to scope (optional)
-        },
-      },
-
-      -- Textobjects (select/ move / swap based on syntax)
-      textobjects = {
-        select = {
+  -- nvim-treesitter (syntax highlighting and parsing)
+  {
+    "nvim-treesitter/nvim-treesitter",
+    commit = "42fc28ba",
+    build = ":TSUpdate",
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "lua", "python", "javascript", "html", "typescript", "tsx", "json", "markdown" },
+        sync_install = false,
+        highlight = {
           enable = true,
-          lookahead = true, -- jump forward to textobj
+          additional_vim_regex_highlighting = false,
+        },
+        incremental_selection = {
+          enable = true,
           keymaps = {
-            ["af"] = "@function.outer",
-            ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            ["ic"] = "@class.inner",
-            ["aa"] = "@parameter.outer",
-            ["ia"] = "@parameter.inner",
+            init_selection = "gnn",
+            node_incremental = "grn",
+            node_decremental = "grm",
+            scope_incremental = "grc",
           },
         },
-        move = {
-          enable = true,
-          set_jumps = true, -- add to jumplist
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-            ["]]"] = "@class.outer",
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["af"] = "@function.outer",
+              ["if"] = "@function.inner",
+              ["ac"] = "@class.outer",
+              ["ic"] = "@class.inner",
+              ["aa"] = "@parameter.outer",
+              ["ia"] = "@parameter.inner",
+            },
           },
-          goto_previous_start = {
-            ["[m"] = "@function.outer",
-            ["[["] = "@class.outer",
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              ["]m"] = "@function.outer",
+              ["]]"] = "@class.outer",
+            },
+            goto_previous_start = {
+              ["[m"] = "@function.outer",
+              ["["] = "@class.outer",
+            },
+          },
+          swap = {
+            enable = true,
+            swap_next = { ["<leader>a"] = "@parameter.inner" },
+            swap_previous = { ["<leader>A"] = "@parameter.inner" },
           },
         },
-        swap = {
-          enable = true,
-          swap_next = { ["<leader>a"] = "@parameter.inner" },
-         swap_previous = { ["<leader>A"] = "@parameter.inner" },
-         },
-       },
-     })
-   end,
- },
+      })
+    end,
+  },
 
-   -- leetcode.nvim (solve LeetCode problems in Neovim)
+  -- leetcode.nvim (solve LeetCode problems in Neovim)
    {
      "kawre/leetcode.nvim",
      lazy = leet_arg ~= vim.fn.argv(0, -1),
@@ -282,7 +272,7 @@ require("lazy").setup({
        event = "VeryLazy",
        config = function()
          require("lualine").setup({
-           options = { theme = "gruvbox" },
+           options = { theme = "ayu_dark" },
          })
        end,
      },
@@ -307,13 +297,15 @@ require("lazy").setup({
        end,
      },
 
-    -- gruvbox theme
+    -- ayu theme
     {
-      "ellisonleao/gruvbox.nvim",
+      "Shatur/neovim-ayu",
       priority = 1000,
       config = function()
-        require("gruvbox").setup({
-          contrast = "hard",
+        require("ayu").setup({
+          mirage = false,
+          terminal = true,
+          overrides = {},
         })
       end,
     },
@@ -346,7 +338,7 @@ vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, sil
 vim.keymap.set("n", "<leader>t", ":ToggleTerm<CR>", { noremap = true, silent = true, desc = "Toggle terminal" })
 
 -- --------------------------
--- Colorscheme: gruvbox
+-- Colorscheme: ayu-dark
 -- --------------------------
-vim.cmd("colorscheme gruvbox")
+vim.cmd("colorscheme ayu-dark")
 

@@ -156,3 +156,8 @@ ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta
 ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow
 ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan
 ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+
+# Vite+ bin (https://viteplus.dev)
+. "$HOME/.vite-plus/env"
