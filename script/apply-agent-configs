@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+apply_default() {
+  local source_rel="$1"
+  local target="$2"
+  local source="$DOTFILES_ROOT/$source_rel"
+
+  mkdir -p "$(dirname "$target")"
+
+  if [ ! -e "$target" ]; then
+    cp "$source" "$target"
+    echo "Created $target from tracked default."
+    return
+  fi
+
+  if cmp -s "$source" "$target"; then
+    echo "Unchanged: $target"
+    return
+  fi
+
+  echo "Skipped existing customized file: $target"
+  echo "  Tracked default available at: $source"
+}
+
+apply_default "agents/.codex/config.toml" "$HOME/.codex/config.toml"
+apply_default "agents/.claude/settings.json" "$HOME/.claude/settings.json"
+apply_default "agents/.config/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"

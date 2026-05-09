@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/common.sh
+source "$SCRIPT_DIR/common.sh"
+
+log_step "Removing stow packages"
+ensure_stow
+stow --delete --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${PACKAGES[@]}"
+
+echo "Dotfiles unlinked successfully."

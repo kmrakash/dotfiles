@@ -45,40 +45,28 @@ alias gre="git reset"
 # PATH (cross-platform)
 ############################
 export PATH="$HOME/bin:$PATH"
-
-# ✅ OpenCode (RESTORED)
 export PATH="$HOME/.opencode/bin:$PATH"
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-[ -d "$BUN_INSTALL/bin" ] && export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Neovim (if custom install exists)
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+export NVM_DIR="$HOME/.nvm"
 
 
 ############################
-# macOS-only (Homebrew)
+# Homebrew and OS-specific setup
 ############################
-if $IS_MAC; then
-  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-  export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+if command -v brew >/dev/null 2>&1; then
+  BREW_PREFIX="$(brew --prefix)"
+  export PATH="$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$PATH"
+fi
 
-  # NVM (brew)
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && source "/opt/homebrew/opt/nvm/nvm.sh"
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] \
-    && source "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+if command -v brew >/dev/null 2>&1; then
+  [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && source "$(brew --prefix)/opt/nvm/nvm.sh"
+  [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] \
+    && source "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm"
 
-  # iTerm2 integration
-  [ -s "$HOME/.iterm2_shell_integration.zsh" ] \
-    && source "$HOME/.iterm2_shell_integration.zsh"
-
-  # ZSH plugins (brew)
-  if command -v brew >/dev/null 2>&1; then
-    source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  fi
+  [ -s "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] \
+    && source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  [ -s "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] \
+    && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
 
@@ -86,22 +74,11 @@ fi
 # Linux-only
 ############################
 if $IS_LINUX; then
-  # NVM (non-brew)
-  export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 fi
 
 
-############################
-# Bun completions (portable)
-############################
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-
-############################
-# Starship prompt
-############################
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 
@@ -156,8 +133,4 @@ ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta
 ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow
 ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan
 ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
-export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
-export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
-
-# Vite+ bin (https://viteplus.dev)
-. "$HOME/.vite-plus/env"
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

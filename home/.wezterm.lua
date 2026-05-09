@@ -16,5 +16,13 @@ config.window_decorations = "RESIZE"
 config.window_background_opacity = 0.8
 config.macos_window_background_blur = 10
 
+local local_config = os.getenv("HOME") .. "/.wezterm.local.lua"
+local ok, overrides = pcall(dofile, local_config)
+if ok and type(overrides) == "table" then
+  for key, value in pairs(overrides) do
+    config[key] = value
+  end
+end
+
 -- and finally, return the configuration to wezterm
 return config

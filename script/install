@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/common.sh
+source "$SCRIPT_DIR/common.sh"
+
+log_step "Checking stow changes"
+ensure_stow
+migrate_conflicting_targets
+run_stow_preflight "${PACKAGES[@]}"
+
+log_step "Applying stow packages"
+stow --restow --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${PACKAGES[@]}"
+
+echo "Dotfiles linked successfully."

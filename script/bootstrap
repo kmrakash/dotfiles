@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck source=script/common.sh
+source "$SCRIPT_DIR/common.sh"
+
+NVM_VERSION_FILE="$DOTFILES_ROOT/.nvmrc"
+
+install_homebrew() {
+  if command -v brew >/dev/null 2>&1; then
+    return
+  fi
+
+  log_step "Installing Homebrew"
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+}
+
+load_homebrew_shellenv() {
+  if command -v brew >/dev/null 2>&1; then
+    return
+  fi
+
+  if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  elif [ -x "$HOME/.linuxbrew/bin/brew" ]; then
+    eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+  fi
+}
+
+load_nvm() {
+  if [ -n "${NVM_DIR:-}" ] && [ -s "$NVM_DIR/nvm.sh" ]; then
+    # shellcheck disable=SC1090
+    source "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+    return 0
+  fi
+
+  if command -v brew >/dev/null 2>&1; then
+    local brew_prefix
+    brew_prefix="$(brew --prefix)"
+    if [ -s "$brew_prefix/opt/nvm/nvm.sh" ]; then
+      export NVM_DIR="$HOME/.nvm"
+      mkdir -p "$NVM_DIR"
+      # shellcheck disable=SC1090
+      source "$brew_prefix/opt/nvm/nvm.sh"
+      [ -s "$brew_prefix/opt/nvm/etc/bash_completion.d/nvm" ] \
+        && source "$brew_prefix/opt/nvm/etc/bash_completion.d/nvm"
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
+ensure_cask() {
+  local desired="$1"
+  shift
+  local conflicts=("$@")
+  local conflict
+
+  if brew list --cask "$desired" >/dev/null 2>&1; then
+    echo "$desired already installed."
+    return 0
+  fi
+
+  for conflict in "${conflicts[@]}"; do
+    if brew list --cask "$conflict" >/dev/null 2>&1; then
+      echo "Using installed conflicting cask '$conflict' instead of '$desired'."
+      return 0
+    fi
+  done
+
+  brew install --cask "$desired"
+}
+
+install_node_via_nvm() {
+  if ! load_nvm; then
+    echo "nvm was installed but could not be loaded in this shell."
+    exit 1
+  fi
+
+  if [ ! -f "$NVM_VERSION_FILE" ]; then
+    echo "Missing $NVM_VERSION_FILE"
+    exit 1
+  fi
+
+  log_step "Installing Node via nvm"
+  nvm install
+  nvm use
+  echo "Active Node: $(node --version)"
+  echo "Active npm: $(npm --version)"
+}
+
+show_summary() {
+  local tools=(
+    brew
+    stow
+    git
+    nvim
+    tmux
+    zsh
+    starship
+    eza
+    fzf
+    rg
+    fd
+    docker
+    docker-compose
+    opencode
+    codex
+    claude
+    cursor-agent
+    node
+    npm
+    npx
+  )
+
+  log_step "Installed tool summary"
+  for tool in "${tools[@]}"; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      printf '  [ok] %s -> %s\n' "$tool" "$(command -v "$tool")"
+    else
+      printf '  [--] %s not found\n' "$tool"
+    fi
+  done
+
+  if command -v docker >/dev/null 2>&1; then
+    if docker info >/dev/null 2>&1; then
+      echo "  [ok] docker runtime reachable"
+    else
+      echo "  [--] docker runtime not running (CLI installed only)"
+    fi
+  fi
+}
+
+install_homebrew
+load_homebrew_shellenv
+
+if ! command -v brew >/dev/null 2>&1; then
+  echo "Homebrew installation did not finish correctly."
+  exit 1
+fi
+
+log_step "Installing tools from Brewfile"
+brew bundle --verbose --file="$DOTFILES_ROOT/Brewfile"
+
+if [ "$(uname -s)" = "Darwin" ]; then
+  log_step "Ensuring macOS-only casks"
+  ensure_cask "ghostty"
+fi
+
+log_step "Ensuring agent casks"
+ensure_cask "codex"
+ensure_cask "claude-code" "claude-code@latest"
+
+if [ "$(uname -s)" = "Darwin" ]; then
+  log_step "Docker note"
+  echo "Installed Docker CLI tools via Homebrew."
+  echo "If you want a local Docker runtime on macOS, install and start Docker Desktop, Colima, or OrbStack."
+fi
+
+install_node_via_nvm
+
+log_step "Installing additional agent CLIs"
+"$DOTFILES_ROOT/script/install-agent-tools"
+
+log_step "Applying tracked agent config defaults"
+"$DOTFILES_ROOT/script/apply-agent-configs"
+
+log_step "Installing agent skills"
+"$DOTFILES_ROOT/script/install-skills"
+
+log_step "Linking dotfiles with stow"
+"$DOTFILES_ROOT/script/install"
+
+show_summary
