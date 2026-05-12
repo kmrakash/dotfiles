@@ -156,8 +156,20 @@ ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta
 ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow
 ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan
 ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
+<<<<<<< Updated upstream:.zshrc
+=======
+<<<<<<< Updated upstream:home/.zshrc
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+=======
+>>>>>>> Stashed changes:home/.zshrc
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 
 # Vite+ bin (https://viteplus.dev)
+<<<<<<< Updated upstream:.zshrc
 . "$HOME/.vite-plus/env"
+=======
+# . "$HOME/.vite-plus/env"
+alias requestly="~/applications/requestly-api-client.AppImage --no-sandbox"
+>>>>>>> Stashed changes:.zshrc
+>>>>>>> Stashed changes:home/.zshrc
