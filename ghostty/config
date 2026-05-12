@@ -48,5 +48,5 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-# Ayu Dark theme
-theme = ayu
+# Ayu Dark theme (bundled name is case-sensitive on Linux)
+theme = Ayu
