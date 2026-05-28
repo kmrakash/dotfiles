@@ -1,5 +1,5 @@
 -- ~/.config/nvim/init.lua
--- Minimal lazy.nvim based config with nvim-surround, flash.nvim, Base2Tone (Earth)
+-- Minimal lazy.nvim based config with nvim-surround, flash.nvim, Catppuccin Macchiato
 -- For Neovim 0.9.5 on Ubuntu
 
 -- --------------------------
@@ -272,7 +272,7 @@ require("lazy").setup({
        event = "VeryLazy",
        config = function()
          require("lualine").setup({
-           options = { theme = "ayu_dark" },
+           options = { theme = "catppuccin" },
          })
        end,
      },
@@ -297,18 +297,33 @@ require("lazy").setup({
        end,
      },
 
-    -- ayu theme
-    {
-      "Shatur/neovim-ayu",
-      priority = 1000,
-      config = function()
-        require("ayu").setup({
-          mirage = false,
-          terminal = true,
-          overrides = {},
-        })
-      end,
-    },
+     -- Catppuccin theme to match Ghostty and tmux
+     {
+       "catppuccin/nvim",
+       name = "catppuccin",
+       lazy = false,
+       priority = 1000,
+       config = function()
+         require("catppuccin").setup({
+           flavour = "macchiato",
+           integrations = {
+             bufferline = true,
+             cmp = true,
+             flash = true,
+             gitsigns = true,
+             mason = true,
+             nvimtree = true,
+             telescope = true,
+             treesitter = true,
+             lualine = true,
+             notify = false,
+             neotree = false,
+           },
+         })
+
+         vim.cmd.colorscheme("catppuccin")
+       end,
+     },
 
 }, {
   -- lazy.nvim options
@@ -336,9 +351,3 @@ vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, sil
 
 -- Terminal
 vim.keymap.set("n", "<leader>t", ":ToggleTerm<CR>", { noremap = true, silent = true, desc = "Toggle terminal" })
-
--- --------------------------
--- Colorscheme: ayu-dark
--- --------------------------
-vim.cmd("colorscheme ayu-dark")
-
