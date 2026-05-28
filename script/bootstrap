@@ -169,6 +169,9 @@ install_node_via_nvm
 log_step "Installing additional agent CLIs"
 "$DOTFILES_ROOT/script/install-agent-tools"
 
+log_step "Installing JetBrains Mono"
+"$DOTFILES_ROOT/script/install-fonts"
+
 log_step "Applying tracked agent config defaults"
 "$DOTFILES_ROOT/script/apply-agent-configs"
 

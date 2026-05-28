@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+FONT_FAMILY="JetBrains Mono"
+
+has_jetbrains_mono() {
+  if command -v fc-list >/dev/null 2>&1; then
+    fc-list | grep -qi "$FONT_FAMILY"
+    return $?
+  fi
+
+  return 1
+}
+
+install_on_macos() {
+  if brew list --cask font-jetbrains-mono >/dev/null 2>&1; then
+    echo "$FONT_FAMILY already installed."
+    return 0
+  fi
+
+  brew install --cask font-jetbrains-mono
+}
+
+install_on_linux() {
+  local installer_url="https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh"
+
+  echo "Installing $FONT_FAMILY from the official JetBrains installer..."
+  curl -fsSL "$installer_url" | bash
+}
+
+if has_jetbrains_mono; then
+  echo "$FONT_FAMILY already installed."
+  exit 0
+fi
+
+case "$(uname -s)" in
+  Darwin)
+    install_on_macos
+    ;;
+  Linux)
+    install_on_linux
+    ;;
+  *)
+    echo "Unsupported platform for automatic font install: $(uname -s)"
+    exit 1
+    ;;
+esac
+
+if command -v fc-cache >/dev/null 2>&1; then
+  fc-cache -f >/dev/null 2>&1 || true
+fi
+
+echo "$FONT_FAMILY installation complete."

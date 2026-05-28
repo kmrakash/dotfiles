@@ -36,6 +36,7 @@ vim.opt.tabstop = 2
 vim.opt.clipboard = "unnamedplus"
 vim.opt.termguicolors = true
 vim.opt.timeoutlen = 500            -- useful for jj combo timing
+vim.o.guifont = "JetBrains Mono:h14"
 
 -- --------------------------
 -- Code Folding
