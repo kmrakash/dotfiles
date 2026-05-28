@@ -25,14 +25,14 @@
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
-  "editor.fontFamily": "Fira Code",
+  "editor.fontFamily": "JetBrains Mono",
   "editor.fontSize": 14,
   "editor.fontLigatures": true,
   "editor.lineHeight": 2,
   "files.insertFinalNewline": true,
   "extensions.ignoreRecommendations": true,
   "files.autoSave": "afterDelay",
-  "terminal.integrated.fontFamily": "Fira Code",
+  "terminal.integrated.fontFamily": "JetBrains Mono",
   "terminal.integrated.tabs.enabled": false,
   "terminal.integrated.lineHeight": 1.5,
   "terminal.integrated.fontSize": 14,
@@ -54,5 +54,4 @@
   },
   "diffEditor.ignoreTrimWhitespace": false,
 }
-
 

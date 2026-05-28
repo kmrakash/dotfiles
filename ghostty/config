@@ -48,5 +48,8 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
+# Use JetBrains Mono so terminal text, tmux, and terminal Neovim stay aligned.
+font-family = JetBrains Mono
+
 # Match tmux Catppuccin palette
 theme = Catppuccin Macchiato
