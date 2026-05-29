@@ -223,6 +223,7 @@ require("lazy").setup({
        config = function()
          require("mason-lspconfig").setup({
            ensure_installed = { "ts_ls", "emmet_ls", "jsonls" },
+           automatic_enable = false,
          })
        end,
      },

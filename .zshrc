@@ -163,3 +163,15 @@ export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 # . "$HOME/.vite-plus/env"
 alias requestly="~/applications/requestly-api-client.AppImage --no-sandbox"
 
+# zoxider config
+eval "$(zoxide init zsh)"
+
+# Android SDK
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+
+# Java JDK 17
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
