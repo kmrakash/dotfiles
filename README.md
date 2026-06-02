@@ -18,11 +18,12 @@ cd ~/dotfiles
 This will:
 
 1. install Homebrew if needed
-2. install the tools declared in `Brewfile`
+2. install the tools declared in `Brewfile`, including `atuin`, `bat`, `eza`, `fd`, `fzf`, `ghostty`, `ripgrep`, `starship`, `tmux`, `zoxide`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`
 3. install Node through `nvm` using `.nvmrc`
-4. install agent desktop/CLI tools and skills
-5. apply tracked agent config defaults without overwriting local customizations
-6. symlink configs into `$HOME` with `stow`
+4. wire shell integrations for `atuin`, `fzf`, `zoxide`, and `bat`
+5. install agent desktop/CLI tools and skills
+6. apply tracked agent config defaults without overwriting local customizations
+7. symlink configs into `$HOME` with `stow`
 
 ## Layout
 
@@ -32,6 +33,13 @@ Each top-level package is managed by `stow`:
 - `ghostty` -> `~/.config/ghostty`
 - `nvim` -> `~/.config/nvim`
 - `starship` -> `~/.config/starship.toml`
+
+The shell setup currently enables:
+
+- `atuin` for history search
+- `fzf` shell key bindings and fuzzy completion
+- `zoxide` as a `cd` replacement
+- `bat` as the interactive `cat` alias
 ## Commands
 
 Install packages and link configs:

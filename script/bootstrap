@@ -106,6 +106,9 @@ show_summary() {
     zsh
     starship
     eza
+    atuin
+    zoxide
+    bat
     fzf
     rg
     fd
@@ -150,13 +153,9 @@ log_step "Installing tools from Brewfile"
 brew bundle --verbose --file="$DOTFILES_ROOT/Brewfile"
 
 if [ "$(uname -s)" = "Darwin" ]; then
-  log_step "Ensuring macOS-only casks"
-  ensure_cask "ghostty"
+  log_step "Ensuring macOS agent casks"
+  ensure_cask "claude-code" "claude-code@latest"
 fi
-
-log_step "Ensuring agent casks"
-ensure_cask "codex"
-ensure_cask "claude-code" "claude-code@latest"
 
 if [ "$(uname -s)" = "Darwin" ]; then
   log_step "Docker note"

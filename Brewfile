@@ -6,6 +6,9 @@ brew "tmux"
 brew "zsh"
 brew "starship"
 brew "eza"
+brew "atuin"
+brew "zoxide"
+brew "bat"
 brew "fzf"
 brew "ripgrep"
 brew "fd"
@@ -15,4 +18,7 @@ brew "opencode"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
-cask "codex"
+if OS.mac?
+  cask "codex"
+  cask "ghostty"
+end

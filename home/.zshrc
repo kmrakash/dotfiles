@@ -15,6 +15,7 @@ esac
 ############################
 alias vim="nvim"
 alias cc="clear"
+alias cat="bat --paging=never --style=plain"
 alias zshconfig="vim ~/.zshrc"
 alias zshreload="source ~/.zshrc"
 
@@ -53,20 +54,15 @@ export NVM_DIR="$HOME/.nvm"
 ############################
 # Homebrew and OS-specific setup
 ############################
+BREW_PREFIX=""
 if command -v brew >/dev/null 2>&1; then
   BREW_PREFIX="$(brew --prefix)"
   export PATH="$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$PATH"
-fi
-
-if command -v brew >/dev/null 2>&1; then
-  [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && source "$(brew --prefix)/opt/nvm/nvm.sh"
-  [ -s "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm" ] \
-    && source "$(brew --prefix)/opt/nvm/etc/bash_completion.d/nvm"
-
-  [ -s "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] \
-    && source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  [ -s "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] \
-    && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [ -s "$BREW_PREFIX/opt/nvm/nvm.sh" ] && source "$BREW_PREFIX/opt/nvm/nvm.sh"
+  [ -s "$BREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] \
+    && source "$BREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
+  [ -s "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] \
+    && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
 
@@ -76,6 +72,28 @@ fi
 if $IS_LINUX; then
   [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+fi
+
+if [[ $- == *i* ]]; then
+  autoload -Uz compinit
+  compinit
+fi
+
+if command -v fzf >/dev/null 2>&1; then
+  export FZF_CTRL_R_COMMAND=""
+  source <(fzf --zsh)
+fi
+
+if command -v atuin >/dev/null 2>&1; then
+  export ATUIN_NOBIND="true"
+  eval "$(atuin init zsh)"
+  bindkey '^r' atuin-search
+  bindkey '^[[A' atuin-up-search
+  bindkey '^[OA' atuin-up-search
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh --cmd cd)"
 fi
 
 
@@ -95,6 +113,8 @@ fi
 ############################
 # ZSH syntax highlighting config (gruvbox theme)
 ############################
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
 (( ${+ZSH_HIGHLIGHT_STYLES} )) || typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[path]=none
 ZSH_HIGHLIGHT_STYLES[path_prefix]=none
@@ -133,4 +153,8 @@ ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta
 ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow
 ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan
 ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
-[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+if command -v brew >/dev/null 2>&1; then
+  [ -s "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] \
+    && source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
