@@ -1,5 +1,5 @@
 -- ~/.config/nvim/init.lua
--- Minimal lazy.nvim based config with nvim-surround, flash.nvim, Catppuccin Macchiato
+-- Minimal lazy.nvim based config with nvim-surround, flash.nvim, and GitHub Dark Default
 -- For Neovim 0.9.5 on Ubuntu
 
 -- --------------------------
@@ -280,17 +280,6 @@ require("lazy").setup({
     end,
   },
 
-  -- lualine (status line)
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("lualine").setup({
-        options = { theme = "catppuccin" },
-      })
-    end,
-  },
-
   -- gitsigns (git signs)
   {
     "lewis6991/gitsigns.nvim",
@@ -370,35 +359,42 @@ require("lazy").setup({
     end,
   },
 
-  -- Catppuccin theme to match Ghostty and tmux
+  -- GitHub Dark Default theme to match Ghostty and tmux
   {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "projekt0n/github-nvim-theme",
     lazy = false,
     priority = 1000,
     config = function()
-      require("catppuccin").setup({
-        flavour = "macchiato",
-        integrations = {
-          bufferline = true,
-          cmp = true,
-          flash = true,
-          gitsigns = true,
-          which_key = true,
-          alpha = true,
-          oil = true,
-          fzf = true,
-          mason = true,
-          nvimtree = false,
-          telescope = false,
-          treesitter = true,
-          lualine = true,
-          notify = false,
-          neotree = false,
+      require("github-theme").setup({
+        options = {
+          transparent = false,
+          terminal_colors = true,
+          styles = {
+            comments = "italic",
+            keywords = "NONE",
+            functions = "NONE",
+            variables = "NONE",
+            conditionals = "NONE",
+            constants = "NONE",
+            numbers = "NONE",
+            operators = "NONE",
+            strings = "NONE",
+            types = "NONE",
+          },
         },
       })
+      vim.cmd.colorscheme("github_dark_default")
+    end,
+  },
 
-      vim.cmd.colorscheme("catppuccin")
+  -- lualine (status line)
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("lualine").setup({
+        options = { theme = "github_dark_default" },
+      })
     end,
   },
 

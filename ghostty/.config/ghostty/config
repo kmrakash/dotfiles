@@ -51,5 +51,6 @@
 # Use JetBrains Mono so terminal text, tmux, and terminal Neovim stay aligned.
 font-family = JetBrains Mono
 
-# Match tmux Catppuccin palette
-theme = Catppuccin Macchiato
+# Match the local GitHub Dark Default palette used by tmux and Neovim
+theme = GitHub Dark Default
+background = #0d1117
