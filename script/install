@@ -14,4 +14,7 @@ run_stow_preflight "${PACKAGES[@]}"
 log_step "Applying stow packages"
 stow --restow --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${PACKAGES[@]}"
 
+log_step "Linking lazygit config for macOS"
+manage_lazygit_macos_config
+
 echo "Dotfiles linked successfully."

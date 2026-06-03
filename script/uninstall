@@ -9,5 +9,6 @@ source "$SCRIPT_DIR/common.sh"
 log_step "Removing stow packages"
 ensure_stow
 stow --delete --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${PACKAGES[@]}"
+remove_lazygit_macos_config
 
 echo "Dotfiles unlinked successfully."

@@ -112,6 +112,7 @@ show_summary() {
     fzf
     rg
     fd
+    lazygit
     docker
     docker-compose
     opencode

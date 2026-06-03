@@ -1,0 +1,9 @@
+# Keep selected rows readable against green/red diff text.
+gui:
+  theme:
+    selectedLineBgColor:
+      - default
+    selectedRangeBgColor:
+      - default
+    inactiveViewSelectedLineBgColor:
+      - default

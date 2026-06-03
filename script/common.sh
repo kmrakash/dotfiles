@@ -6,6 +6,7 @@ DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGES=(
   home
   ghostty
+  lazygit
   nvim
   starship
 )
@@ -15,12 +16,53 @@ TARGETS=(
   "$HOME/.wezterm.lua"
   "$HOME/.zshrc"
   "$HOME/.config/ghostty"
+  "$HOME/.config/lazygit"
   "$HOME/.config/nvim"
   "$HOME/.config/starship.toml"
 )
 
 log_step() {
   printf '\n==> %s\n' "$1"
+}
+
+manage_lazygit_macos_config() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    return 0
+  fi
+
+  local source_config="$HOME/.config/lazygit/config.yml"
+  local target_dir="$HOME/Library/Application Support/lazygit"
+  local target_config="$target_dir/config.yml"
+  local timestamp
+  local backup
+
+  mkdir -p "$target_dir"
+
+  if [ -L "$target_config" ] && [ "$(readlink "$target_config")" = "$source_config" ]; then
+    return 0
+  fi
+
+  if [ -e "$target_config" ]; then
+    timestamp="$(date +%Y%m%d%H%M%S)"
+    backup="${target_config}.pre-stow-${timestamp}.bak"
+    echo "Backing up existing lazygit config: $target_config -> $backup"
+    mv "$target_config" "$backup"
+  fi
+
+  ln -s "$source_config" "$target_config"
+}
+
+remove_lazygit_macos_config() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    return 0
+  fi
+
+  local source_config="$HOME/.config/lazygit/config.yml"
+  local target_config="$HOME/Library/Application Support/lazygit/config.yml"
+
+  if [ -L "$target_config" ] && [ "$(readlink "$target_config")" = "$source_config" ]; then
+    rm -f "$target_config"
+  fi
 }
 
 ensure_stow() {

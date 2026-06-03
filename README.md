@@ -18,7 +18,7 @@ cd ~/dotfiles
 This will:
 
 1. install Homebrew if needed
-2. install the tools declared in `Brewfile`, including `atuin`, `bat`, `eza`, `fd`, `fzf`, `ghostty`, `ripgrep`, `starship`, `tmux`, `zoxide`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`
+2. install the tools declared in `Brewfile`, including `atuin`, `bat`, `eza`, `fd`, `fzf`, `ghostty`, `lazygit`, `ripgrep`, `starship`, `tmux`, `zoxide`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`
 3. install Node through `nvm` using `.nvmrc`
 4. wire shell integrations for `atuin`, `fzf`, `zoxide`, and `bat`
 5. install agent desktop/CLI tools and skills
@@ -31,8 +31,13 @@ Each top-level package is managed by `stow`:
 
 - `home` -> files in `$HOME`
 - `ghostty` -> `~/.config/ghostty`
+- `lazygit` -> `~/.config/lazygit`
 - `nvim` -> `~/.config/nvim`
 - `starship` -> `~/.config/starship.toml`
+
+On macOS, `./script/install` also links lazygit's config into
+`~/Library/Application Support/lazygit/config.yml`, which is the default location
+lazygit reads there.
 
 The shell setup currently enables:
 
