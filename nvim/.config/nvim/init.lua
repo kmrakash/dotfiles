@@ -38,6 +38,24 @@ vim.opt.termguicolors = true
 vim.opt.timeoutlen = 500            -- useful for jj combo timing
 vim.o.guifont = "JetBrains Mono:h14"
 
+-- Neovim 0.12 changed some Treesitter match payloads from a single node to a
+-- list of nodes. nvim-treesitter's older predicates still assume the legacy
+-- shape and can crash while calling get_node_text().
+do
+  local orig_get_node_text = vim.treesitter.get_node_text
+  vim.treesitter.get_node_text = function(node, bufnr, opts)
+    if type(node) == "table" then
+      node = node[1]
+    end
+
+    if node == nil then
+      return ""
+    end
+
+    return orig_get_node_text(node, bufnr, opts)
+  end
+end
+
 -- --------------------------
 -- Code Folding
 -- --------------------------
