@@ -50,24 +50,15 @@ vim.opt.foldlevel = 99         -- Start with everything unfolded
 -- jj -> <Esc> in insert mode (fast escape)
 vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Escape insert (jj)" })
 
--- Disable netrw (use nvim-tree instead)
+-- Use oil.nvim instead of the built-in netrw browser
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Auto-start nvim-tree on directory open
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function(data)
     if vim.fn.isdirectory(data.file) == 1 then
-      vim.cmd("NvimTreeToggle")
+      vim.cmd("Oil " .. vim.fn.fnameescape(data.file))
     end
-  end,
-})
-
--- Set up keybindings after plugins load
-vim.api.nvim_create_autocmd("User", {
-  pattern = "LazyDone",
-  callback = function()
-    vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true, desc = "Toggle file explorer" })
   end,
 })
 
@@ -102,13 +93,51 @@ require("lazy").setup({
     },
   },
 
-   -- Tree-sitter ( text parser )
-   -- Telescope (fuzzy finder)
+  -- which-key.nvim (discover keymaps)
   {
-    "nvim-telescope/telescope.nvim",
-    tag = "0.1.6",
-    cmd = "Telescope",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "helix",
+      spec = {
+        { "<leader>f", group = "Find" },
+        { "<leader>g", group = "Git" },
+        { "<leader>c", group = "Code" },
+        { "<leader>t", group = "Terminal" },
+      },
+    },
+    keys = {
+      { "<leader>?", "<cmd>WhichKey<cr>", desc = "Which-key popup" },
+    },
+  },
+
+  -- fzf-lua (fuzzy finder)
+  {
+    "ibhagwan/fzf-lua",
+    cmd = "FzfLua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>ff", function() require("fzf-lua").files() end, desc = "Find files" },
+      { "<leader>fg", function() require("fzf-lua").live_grep() end, desc = "Live grep" },
+      { "<leader>fb", function() require("fzf-lua").buffers() end, desc = "Buffers" },
+      { "<leader>fh", function() require("fzf-lua").help_tags() end, desc = "Help tags" },
+    },
+  },
+
+  -- oil.nvim (file explorer)
+  {
+    "stevearc/oil.nvim",
+    cmd = "Oil",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      delete_to_trash = true,
+      view_options = {
+        show_hidden = true,
+      },
+    },
+    keys = {
+      { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
+    },
   },
 
   -- nvim-treesitter (syntax highlighting and parsing)
@@ -173,158 +202,205 @@ require("lazy").setup({
   },
 
   -- leetcode.nvim (solve LeetCode problems in Neovim)
-   {
-     "kawre/leetcode.nvim",
-     lazy = leet_arg ~= vim.fn.argv(0, -1),
-     build = ":TSUpdate html",
-     dependencies = {
-       "nvim-lua/plenary.nvim",
-       "MunifTanjim/nui.nvim",
-     },
-     opts = { arg = leet_arg },
-   },
+  {
+    "kawre/leetcode.nvim",
+    lazy = leet_arg ~= vim.fn.argv(0, -1),
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+    },
+    opts = { arg = leet_arg },
+  },
 
-     -- nvim-tree (file explorer)
-     {
-       "nvim-tree/nvim-tree.lua",
-       dependencies = { "nvim-tree/nvim-web-devicons" },
-       cmd = "NvimTreeToggle",
-       config = function()
-         require("nvim-tree").setup({
-           view = { width = 30 },
-           renderer = { icons = { show = { git = true } } },
-           hijack_netrw = true,
-           auto_reload_on_write = true,
-         })
-       end,
-     },
+  -- bufferline (buffer tabs)
+  {
+    "akinsho/bufferline.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    event = "BufEnter",
+    config = function()
+      require("bufferline").setup({})
+    end,
+  },
 
-     -- bufferline (buffer tabs)
-     {
-       "akinsho/bufferline.nvim",
-       dependencies = { "nvim-tree/nvim-web-devicons" },
-       event = "BufEnter",
-       config = function()
-         require("bufferline").setup({})
-       end,
-     },
+  -- mason (LSP manager)
+  {
+    "williamboman/mason.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("mason").setup()
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "ts_ls", "emmet_ls", "jsonls" },
+      })
+    end,
+  },
 
-     -- mason (LSP manager)
-     {
-       "williamboman/mason.nvim",
-       event = "VeryLazy",
-       config = function()
-         require("mason").setup()
-       end,
-     },
-     {
-       "williamboman/mason-lspconfig.nvim",
-       event = "VeryLazy",
-       config = function()
-         require("mason-lspconfig").setup({
-           ensure_installed = { "ts_ls", "emmet_ls", "jsonls" },
-         })
-       end,
-     },
+  -- nvim-lspconfig
+  {
+    "neovim/nvim-lspconfig",
+    ft = { "javascript", "typescript", "tsx", "jsx", "json", "html" },
+    config = function()
+      vim.lsp.config("ts_ls", {})
+      vim.lsp.config("emmet_ls", {})
+      vim.lsp.config("jsonls", {})
+      vim.lsp.enable({ "ts_ls", "emmet_ls", "jsonls" })
+    end,
+  },
 
-     -- nvim-lspconfig
-     {
-       "neovim/nvim-lspconfig",
-       ft = { "javascript", "typescript", "tsx", "jsx", "json", "html" },
-       config = function()
-         vim.lsp.config('ts_ls', {})
-         vim.lsp.config('emmet_ls', {})
-         vim.lsp.config('jsonls', {})
-         vim.lsp.enable({ 'ts_ls', 'emmet_ls', 'jsonls' })
-       end,
-     },
+  -- nvim-cmp (completion)
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
+    event = "InsertEnter",
+    config = function()
+      local cmp = require("cmp")
+      cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-e>"] = cmp.mapping.abort(),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "buffer" },
+          { name = "path" },
+        }),
+      })
+    end,
+  },
 
-     -- nvim-cmp (completion)
-     {
-       "hrsh7th/nvim-cmp",
-       dependencies = {
-         "hrsh7th/cmp-nvim-lsp",
-         "hrsh7th/cmp-buffer",
-         "hrsh7th/cmp-path",
-       },
-       event = "InsertEnter",
-       config = function()
-         local cmp = require("cmp")
-         cmp.setup({
-           mapping = cmp.mapping.preset.insert({
-             ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-             ["<C-f>"] = cmp.mapping.scroll_docs(4),
-             ["<C-Space>"] = cmp.mapping.complete(),
-             ["<C-e>"] = cmp.mapping.abort(),
-             ["<CR>"] = cmp.mapping.confirm({ select = true }),
-           }),
-           sources = cmp.config.sources({
-             { name = "nvim_lsp" },
-             { name = "buffer" },
-             { name = "path" },
-           }),
-         })
-       end,
-     },
+  -- lualine (status line)
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("lualine").setup({
+        options = { theme = "catppuccin" },
+      })
+    end,
+  },
 
-     -- lualine (status line)
-     {
-       "nvim-lualine/lualine.nvim",
-       event = "VeryLazy",
-       config = function()
-         require("lualine").setup({
-           options = { theme = "catppuccin" },
-         })
-       end,
-     },
+  -- gitsigns (git signs)
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "BufEnter",
+    config = function()
+      require("gitsigns").setup()
+    end,
+  },
 
-     -- gitsigns (git signs)
-     {
-       "lewis6991/gitsigns.nvim",
-       event = "BufEnter",
-       config = function()
-         require("gitsigns").setup()
-       end,
-     },
+  -- lazygit.nvim (git UI)
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+    },
+  },
 
-     -- toggleterm (terminal)
-     {
-       "akinsho/toggleterm.nvim",
-       event = "TermOpen",
-       config = function()
-         require("toggleterm").setup({
-           direction = "float",
-         })
-       end,
-     },
+  -- codediff.nvim (structured diff review)
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
+    keys = {
+      { "<leader>gd", "<cmd>CodeDiff<cr>", desc = "Code diff" },
+    },
+  },
 
-     -- Catppuccin theme to match Ghostty and tmux
-     {
-       "catppuccin/nvim",
-       name = "catppuccin",
-       lazy = false,
-       priority = 1000,
-       config = function()
-         require("catppuccin").setup({
-           flavour = "macchiato",
-           integrations = {
-             bufferline = true,
-             cmp = true,
-             flash = true,
-             gitsigns = true,
-             mason = true,
-             nvimtree = true,
-             telescope = true,
-             treesitter = true,
-             lualine = true,
-             notify = false,
-             neotree = false,
-           },
-         })
+  -- alpha-nvim (start screen)
+  {
+    "goolord/alpha-nvim",
+    event = "VimEnter",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      local alpha = require("alpha")
+      local dashboard = require("alpha.themes.dashboard")
 
-         vim.cmd.colorscheme("catppuccin")
-       end,
-     },
+      dashboard.section.header.val = {
+        "  _   _                  ",
+        " | \\ | | ___  _ __ ___   ",
+        " |  \\| |/ _ \\| '_ ` _ \\  ",
+        " | |\\  | (_) | | | | | | ",
+        " |_| \\_|\\___/|_| |_| |_| ",
+      }
+
+      dashboard.section.buttons.val = {
+        dashboard.button("f", "Find files", "<cmd>FzfLua files<cr>"),
+        dashboard.button("r", "Recent files", "<cmd>FzfLua oldfiles<cr>"),
+        dashboard.button("g", "Open LazyGit", "<cmd>LazyGit<cr>"),
+        dashboard.button("c", "Edit config", "<cmd>edit " .. vim.fn.stdpath("config") .. "/init.lua<cr>"),
+        dashboard.button("q", "Quit", "<cmd>qa<cr>"),
+      }
+
+      dashboard.section.footer.val = { "" }
+      alpha.setup(dashboard.config)
+
+      if vim.fn.argc() == 0 then
+        vim.cmd("Alpha")
+      end
+    end,
+  },
+
+  -- toggleterm (terminal)
+  {
+    "akinsho/toggleterm.nvim",
+    event = "TermOpen",
+    config = function()
+      require("toggleterm").setup({
+        direction = "float",
+      })
+    end,
+  },
+
+  -- Catppuccin theme to match Ghostty and tmux
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "macchiato",
+        integrations = {
+          bufferline = true,
+          cmp = true,
+          flash = true,
+          gitsigns = true,
+          which_key = true,
+          alpha = true,
+          oil = true,
+          fzf = true,
+          mason = true,
+          nvimtree = false,
+          telescope = false,
+          treesitter = true,
+          lualine = true,
+          notify = false,
+          neotree = false,
+        },
+      })
+
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
 
 }, {
   -- lazy.nvim options
@@ -337,12 +413,6 @@ require("lazy").setup({
 -- Buffer Navigation
 vim.keymap.set("n", "<Tab>", ":BufferLineCycleNext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
 vim.keymap.set("n", "<S-Tab>", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
-
--- Telescope (fuzzy finder)
-vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { noremap = true, silent = true, desc = "Find files" })
-vim.keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>", { noremap = true, silent = true, desc = "Live grep" })
-vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", { noremap = true, silent = true, desc = "Buffers" })
-vim.keymap.set("n", "<leader>fh", ":Telescope help_tags<CR>", { noremap = true, silent = true, desc = "Help tags" })
 
 -- LSP Actions
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true, desc = "Go to definition" })
