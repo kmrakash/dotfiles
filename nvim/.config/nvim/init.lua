@@ -1,12 +1,12 @@
 -- ~/.config/nvim/init.lua
 -- Minimal lazy.nvim based config with nvim-surround, flash.nvim, Catppuccin Macchiato
--- For Neovim 0.9.5 on Ubuntu
+-- For Neovim 0.12+
 
 -- --------------------------
 -- Bootstrap lazy.nvim
 -- --------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
@@ -39,12 +39,11 @@ vim.opt.timeoutlen = 500            -- useful for jj combo timing
 vim.o.guifont = "JetBrains Mono:h14"
 
 -- --------------------------
--- Code Folding
+-- Code Folding (native treesitter folding, 0.10+)
 -- --------------------------
--- vim.opt.foldmethod = "expr"
--- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = true
-vim.opt.foldmethod = "syntax"  -- or "syntax" for language-aware folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99         -- Start with everything unfolded
 
 -- jj -> <Esc> in insert mode (fast escape)
@@ -90,6 +89,31 @@ require("lazy").setup({
     end,
   },
 
+  -- which-key (keybinding popup helper)
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("which-key").setup({
+        preset = "modern",
+        delay = 400,
+      })
+      require("which-key").add({
+        { "<leader>f", group = "Find (Telescope)" },
+        { "<leader>e", desc = "Toggle file explorer" },
+        { "<leader>t", desc = "Toggle terminal" },
+        { "<leader>ca", desc = "Code actions" },
+        { "<leader>a", desc = "Swap param next" },
+        { "<leader>A", desc = "Swap param prev" },
+        { "gd", desc = "Go to definition" },
+        { "gr", desc = "References" },
+        { "K",  desc = "Hover docs" },
+        { "s",  desc = "Flash jump", mode = { "n", "x", "o" } },
+        { "S",  desc = "Flash treesitter", mode = { "n", "x", "o" } },
+      })
+    end,
+  },
+
   -- flash.nvim (jump/labels)
   {
     "folke/flash.nvim",
@@ -106,7 +130,7 @@ require("lazy").setup({
    -- Telescope (fuzzy finder)
   {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.6",
+    branch = "0.1.x",
     cmd = "Telescope",
     dependencies = { "nvim-lua/plenary.nvim" },
   },
@@ -114,7 +138,6 @@ require("lazy").setup({
   -- nvim-treesitter (syntax highlighting and parsing)
   {
     "nvim-treesitter/nvim-treesitter",
-    commit = "42fc28ba",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     dependencies = {
@@ -290,7 +313,7 @@ require("lazy").setup({
      -- toggleterm (terminal)
      {
        "akinsho/toggleterm.nvim",
-       event = "TermOpen",
+       cmd = "ToggleTerm",
        config = function()
          require("toggleterm").setup({
            direction = "float",
@@ -298,7 +321,7 @@ require("lazy").setup({
        end,
      },
 
-     -- Catppuccin theme to match Ghostty and tmux
+     -- Catppuccin theme to match Ghostty and herdr
      {
        "catppuccin/nvim",
        name = "catppuccin",
