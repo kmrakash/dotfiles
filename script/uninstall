@@ -6,8 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=script/common.sh
 source "$SCRIPT_DIR/common.sh"
 
-log_step "Removing stow packages"
+log_step "Select packages to unstow"
 ensure_stow
-stow --delete --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${PACKAGES[@]}"
+select_packages
+
+log_step "Removing stow packages"
+stow --delete --verbose=2 --dir="$DOTFILES_ROOT" --target="$HOME" "${SELECTED_PACKAGES[@]}"
 
 echo "Dotfiles unlinked successfully."

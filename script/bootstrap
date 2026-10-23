@@ -102,7 +102,7 @@ show_summary() {
     stow
     git
     nvim
-    tmux
+    herdr
     zsh
     starship
     eza

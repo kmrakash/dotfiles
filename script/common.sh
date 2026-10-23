@@ -8,16 +8,57 @@ PACKAGES=(
   ghostty
   nvim
   starship
+  herdr
 )
 
 TARGETS=(
-  "$HOME/.tmux.conf"
   "$HOME/.wezterm.lua"
   "$HOME/.zshrc"
   "$HOME/.config/ghostty"
   "$HOME/.config/nvim"
   "$HOME/.config/starship.toml"
 )
+
+# Returns the required command for a package, or empty string if none.
+package_requirement() {
+  case "$1" in
+    ghostty)  echo "ghostty" ;;
+    nvim)     echo "nvim" ;;
+    starship) echo "starship" ;;
+    herdr)    echo "herdr" ;;
+    *)        echo "" ;;
+  esac
+}
+
+# Populates SELECTED_PACKAGES by prompting Y/N for each package in PACKAGES.
+# Skips packages whose required command is missing.
+select_packages() {
+  SELECTED_PACKAGES=()
+  echo ""
+  local pkg req answer
+  for pkg in "${PACKAGES[@]}"; do
+    req="$(package_requirement "$pkg")"
+
+    if [[ -n "$req" ]] && ! command -v "$req" >/dev/null 2>&1; then
+      printf '  [skip] %-12s  (%s not found)\n' "$pkg" "$req"
+      continue
+    fi
+
+    printf '  Stow %-12s? [y/N] ' "$pkg"
+    read -r answer </dev/tty
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+      SELECTED_PACKAGES+=("$pkg")
+    fi
+  done
+
+  if [[ ${#SELECTED_PACKAGES[@]} -eq 0 ]]; then
+    echo "No packages selected. Nothing to do."
+    exit 0
+  fi
+
+  echo ""
+  echo "Selected: ${SELECTED_PACKAGES[*]}"
+}
 
 log_step() {
   printf '\n==> %s\n' "$1"

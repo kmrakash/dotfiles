@@ -1,0 +1,15 @@
+onboarding = false
+
+[terminal]
+default_shell = "zsh"
+shell_mode = "auto"
+
+[ui.toast]
+delivery = "system"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[theme]
+name = "kanagawa-lotus"
+auto_switch = false
