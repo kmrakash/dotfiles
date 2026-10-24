@@ -17,6 +17,7 @@ alias vim="nvim"
 alias cc="clear"
 alias zshconfig="vim ~/.zshrc"
 alias zshreload="source ~/.zshrc"
+alias claude-work="CLAUDE_CONFIG_DIR=$HOME/.claude-work claude"
 
 # Eza
 alias l="eza -l --icons --git -a"
