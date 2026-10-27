@@ -89,6 +89,15 @@ require("lazy").setup({
     end,
   },
 
+  -- git diff reviewer
+   {
+     "zion-off/diff",
+     cmd = { "DiffNvimOpen", "DiffNvimToggle", "DiffNvimClose", "DiffNvimRefresh" },
+     config = function()
+       require("diff").setup()
+     end,
+   },
+
   -- which-key (keybinding popup helper)
   {
     "folke/which-key.nvim",
@@ -110,6 +119,26 @@ require("lazy").setup({
         { "K",  desc = "Hover docs" },
         { "s",  desc = "Flash jump", mode = { "n", "x", "o" } },
         { "S",  desc = "Flash treesitter", mode = { "n", "x", "o" } },
+        -- Java
+        { "<leader>j",  group = "Java" },
+        { "<leader>ji", desc = "Organize imports" },
+        { "<leader>jv", desc = "Extract variable" },
+        { "<leader>jm", desc = "Extract method" },
+        { "<leader>jt", desc = "Test nearest method" },
+        { "<leader>jT", desc = "Test class" },
+        { "<leader>jn", desc = "Run nearest test (neotest)" },
+        { "<leader>js", desc = "Test summary (neotest)" },
+        -- Debug
+        { "<leader>d",  group = "Debug" },
+        { "<leader>db", desc = "Toggle breakpoint" },
+        { "<leader>dc", desc = "Continue" },
+        { "<leader>do", desc = "Step over" },
+        { "<leader>di", desc = "Step into" },
+        { "<leader>dO", desc = "Step out" },
+        { "<leader>du", desc = "DAP UI toggle" },
+        { "<leader>dr", desc = "DAP REPL" },
+        -- Format
+        { "<leader>cf", desc = "Format file" },
       })
     end,
   },
@@ -144,68 +173,56 @@ require("lazy").setup({
       "nvim-treesitter/nvim-treesitter-textobjects",
     },
     config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = { "lua", "python", "javascript", "html", "typescript", "tsx", "json", "markdown" },
+      -- nvim-treesitter v1: only manages parsers; highlight/selection are Neovim built-ins
+      require("nvim-treesitter").setup({
+        ensure_installed = { "lua", "python", "javascript", "html", "typescript", "tsx", "json", "markdown", "java" },
         sync_install = false,
-        highlight = {
+      })
+      require("nvim-treesitter-textobjects").setup({
+        select = {
           enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-        incremental_selection = {
-          enable = true,
+          lookahead = true,
           keymaps = {
-            init_selection = "gnn",
-            node_incremental = "grn",
-            node_decremental = "grm",
-            scope_incremental = "grc",
+            ["af"] = "@function.outer",
+            ["if"] = "@function.inner",
+            ["ac"] = "@class.outer",
+            ["ic"] = "@class.inner",
+            ["aa"] = "@parameter.outer",
+            ["ia"] = "@parameter.inner",
           },
         },
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-              ["aa"] = "@parameter.outer",
-              ["ia"] = "@parameter.inner",
-            },
+        move = {
+          enable = true,
+          set_jumps = true,
+          goto_next_start = {
+            ["]m"] = "@function.outer",
+            ["]]"] = "@class.outer",
           },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              ["]]"] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              ["["] = "@class.outer",
-            },
+          goto_previous_start = {
+            ["[m"] = "@function.outer",
+            ["[["] = "@class.outer",
           },
-          swap = {
-            enable = true,
-            swap_next = { ["<leader>a"] = "@parameter.inner" },
-            swap_previous = { ["<leader>A"] = "@parameter.inner" },
-          },
+        },
+        swap = {
+          enable = true,
+          swap_next = { ["<leader>a"] = "@parameter.inner" },
+          swap_previous = { ["<leader>A"] = "@parameter.inner" },
         },
       })
     end,
   },
 
   -- leetcode.nvim (solve LeetCode problems in Neovim)
-   {
-     "kawre/leetcode.nvim",
-     lazy = leet_arg ~= vim.fn.argv(0, -1),
-     build = ":TSUpdate html",
-     dependencies = {
-       "nvim-lua/plenary.nvim",
-       "MunifTanjim/nui.nvim",
-     },
-     opts = { arg = leet_arg },
-   },
+   -- {
+   --   "kawre/leetcode.nvim",
+   --   lazy = leet_arg ~= vim.fn.argv(0, -1),
+   --   build = ":TSUpdate html",
+   --   dependencies = {
+   --     "nvim-lua/plenary.nvim",
+   --     "MunifTanjim/nui.nvim",
+   --   },
+   --   opts = { arg = leet_arg },
+   -- },
 
      -- nvim-tree (file explorer)
      {
@@ -245,7 +262,7 @@ require("lazy").setup({
        event = "VeryLazy",
        config = function()
          require("mason-lspconfig").setup({
-           ensure_installed = { "ts_ls", "emmet_ls", "jsonls" },
+           ensure_installed = { "ts_ls", "emmet_ls", "jsonls", "jdtls" },
          })
        end,
      },
@@ -317,6 +334,113 @@ require("lazy").setup({
        config = function()
          require("toggleterm").setup({
            direction = "float",
+         })
+       end,
+     },
+
+     -- nvim-jdtls (Java LSP)
+     {
+       "mfussenegger/nvim-jdtls",
+       ft = { "java" },
+       dependencies = { "mfussenegger/nvim-dap" },
+       config = function()
+         local jdtls = require("jdtls")
+         local root_dir = jdtls.setup.find_root({ "pom.xml", "build.gradle", "build.gradle.kts", ".git" })
+         local workspace = vim.fn.stdpath("data") .. "/jdtls-workspaces/" .. vim.fn.fnamemodify(root_dir, ":t")
+         local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+         jdtls.start_or_attach({
+           cmd = { vim.fn.stdpath("data") .. "/mason/bin/jdtls", "-data", workspace },
+           root_dir = root_dir,
+           capabilities = capabilities,
+           on_attach = function(_, bufnr)
+             jdtls.setup_dap({ hotcodereplace = "auto" })
+             local opts = function(desc) return { buffer = bufnr, noremap = true, silent = true, desc = desc } end
+             vim.keymap.set("n", "<leader>ji", jdtls.organize_imports,                opts("Organize imports"))
+             vim.keymap.set("n", "<leader>jv", jdtls.extract_variable,                opts("Extract variable"))
+             vim.keymap.set("n", "<leader>jm", jdtls.extract_method,                  opts("Extract method"))
+             vim.keymap.set("n", "<leader>jt", jdtls.test_nearest_method,             opts("Test nearest method"))
+             vim.keymap.set("n", "<leader>jT", jdtls.test_class,                      opts("Test class"))
+           end,
+           settings = {
+             java = {
+               format = { enabled = true },
+               completion = { importOrder = {} },
+               inlayHints = { parameterNames = { enabled = "all" } },
+             },
+           },
+         })
+       end,
+     },
+
+     -- nvim-dap (debugger core)
+     {
+       "mfussenegger/nvim-dap",
+       lazy = true,
+       keys = {
+         { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+         { "<leader>dc", function() require("dap").continue() end,          desc = "Continue" },
+         { "<leader>do", function() require("dap").step_over() end,         desc = "Step over" },
+         { "<leader>di", function() require("dap").step_into() end,         desc = "Step into" },
+         { "<leader>dO", function() require("dap").step_out() end,          desc = "Step out" },
+         { "<leader>dr", function() require("dap").repl.open() end,         desc = "DAP REPL" },
+       },
+     },
+
+     -- nvim-dap-ui (debugger UI)
+     {
+       "rcarriga/nvim-dap-ui",
+       dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+       keys = {
+         { "<leader>du", function() require("dapui").toggle() end, desc = "DAP UI toggle" },
+       },
+       config = function()
+         local dapui = require("dapui")
+         dapui.setup()
+         local dap = require("dap")
+         dap.listeners.after.event_initialized["dapui_config"]  = function() dapui.open() end
+         dap.listeners.before.event_terminated["dapui_config"]  = function() dapui.close() end
+         dap.listeners.before.event_exited["dapui_config"]      = function() dapui.close() end
+       end,
+     },
+
+     -- conform.nvim (auto-formatter; install google-java-format via :MasonInstall google-java-format)
+     {
+       "stevearc/conform.nvim",
+       event = "BufWritePre",
+       keys = {
+         { "<leader>cf", function() require("conform").format({ async = true, lsp_fallback = true }) end, desc = "Format file" },
+       },
+       config = function()
+         require("conform").setup({
+           formatters_by_ft = {
+             java       = { "google-java-format" },
+             javascript = { "prettier" },
+             typescript = { "prettier" },
+             json       = { "prettier" },
+           },
+           format_on_save = { timeout_ms = 3000, lsp_fallback = true },
+         })
+       end,
+     },
+
+     -- neotest + neotest-java (JUnit test runner UI)
+     {
+       "nvim-neotest/neotest",
+       dependencies = {
+         "nvim-neotest/nvim-nio",
+         "nvim-lua/plenary.nvim",
+         "nvim-treesitter/nvim-treesitter",
+         "rcasia/neotest-java",
+       },
+       ft = { "java" },
+       keys = {
+         { "<leader>jn", function() require("neotest").run.run() end,             desc = "Run nearest test" },
+         { "<leader>js", function() require("neotest").summary.toggle() end,      desc = "Test summary" },
+       },
+       config = function()
+         require("neotest").setup({
+           adapters = { require("neotest-java") },
          })
        end,
      },
